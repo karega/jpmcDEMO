@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 import styled from "styled-components";
-import { flexbox, space } from "styled-system";
+import {flexbox, space} from "styled-system";
 
 import Profile from "./../Profile";
 
@@ -41,75 +41,86 @@ const TeamLink = styled.button`
 `;
 
 export default function Team() {
-  interface GeoLocation {
-    lat: number;
-    lng: number;
-  };
+    interface GeoLocation {
+        lat: number;
+        lng: number;
+    }
 
-  interface Address {
-    "street": string;
-    "suite": string;
-    "city": string;
-    "zipcode": string;
-    "geo": GeoLocation;
-  };
+    interface Address {
+        "street": string;
+        "suite": string;
+        "city": string;
+        "zipcode": string;
+        "geo": GeoLocation;
+    }
 
-  interface Company {
-    "name": string;
-    "catchPhrase": string;
-    "bs": string;
-  }
+    interface Company {
+        "name": string;
+        "catchPhrase": string;
+        "bs": string;
+    }
 
-  interface User {
-    "id": string;
-    "name": string;
-    "username": string;
-    "email": string;
-    "address": Address;
-    "phone": string;
-    "website": string;
-    "company": Company;
-  };
+    interface User {
+        "id": string;
+        "name": string;
+        "username": string;
+        "email": string;
+        "address": Address;
+        "phone": string;
+        "website": string;
+        "company": Company;
+    }
 
-  const [team, setTeam] = useState([]);
-  const [profile, setProfile] = useState({});
+    const [error, setError] = useState<string>("");
+    const [profile, setProfile] = useState({});
+    const [team, setTeam] = useState<User[]>([]);
 
-  useEffect(() => {
-    axios.get<User[]>('https://jsonplaceholder.typicode.com/users').then(response => {
-      setTeam(response.data);
-    }).catch((error) => {
-      console.error(error);
-    });
-  }, []);
+    useEffect(() => {
+        axios.get<User[]>('https://jsonplaceholder.typicode.com/users').then(response => {
+            setTeam(response.data);
+        }).catch((error) => {
+            setError("Unable to load users.");
+        });
+    }, []);
 
-  const handleProfile = (user: User) => {
-    setProfile(user);
+    const handleProfile = (user: User) => {
+        setProfile(user);
 
-    document.body.addEventListener('click', (): void => {
-      setProfile({});
-      document.body.removeEventListener('click', (): void => { }, true);
-    }, true);
-  }
+        document.body.addEventListener('click', (): void => {
+            setProfile({});
+            document.body.removeEventListener('click', (): void => {
+            }, true);
+        }, true);
+    }
 
-  return (
-    <React.Fragment>
-      <TeamContainer>
-        {
-          team.map((user, index): any => {
-            return (
-              <TeamProfile key={`tp-${index}`}>
-                <TeamLink onClick={(event) => {
-                  event.stopPropagation();
-                  handleProfile(user);
-                }} >
-                  {user.name}
-                </TeamLink>
-              </TeamProfile>
-            )
-          })
-        }
-      </TeamContainer>
-      {Object.keys(profile).length > 0 && <Profile profile={profile} />}
-    </React.Fragment>
-  );
+    return (
+        <React.Fragment>
+            {error === "" && (
+                <>
+                    <TeamContainer className="team">
+                        {
+                            team.map((user, index): any => {
+                                return (
+                                    <TeamProfile key={`tp-${index}`}>
+                                        <TeamLink onClick={(event) => {
+                                            event.stopPropagation();
+                                            handleProfile(user);
+                                        }}>
+                                            {user.name}
+                                        </TeamLink>
+                                    </TeamProfile>
+                                )
+                            })
+                        }
+                    </TeamContainer>
+                    {Object.keys(profile).length > 0 && <Profile profile={profile}/>}
+                </>
+            )}
+            {error !== "" && (
+                <>
+                    <div role="alert">{error}</div>
+                </>
+            )}
+        </React.Fragment>
+    );
 }

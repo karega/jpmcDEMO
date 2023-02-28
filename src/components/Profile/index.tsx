@@ -16,8 +16,8 @@ const Backsplash = styled.div`
 const UserProfile = styled.div`
   display: block;
   min-width: 10rem;
-  width: 16rem;
-  height: 16rem;
+  width: 20rem;
+  height: 18rem;
   margin: auto;
   padding: 0.5rem;
 
@@ -45,13 +45,13 @@ export default function Profile(props: any) {
   const { profile } = props;
   const { address } = profile;
 
-  const getTeam = (id) => {
-    if (id - 1 % 3) {
+  const getTeam = (id: number) => {
+    if ((id * id < 18) && (id % 2 === 0)) {
+      return "Team A";
+    } else if (id - 1 % 3) {
       return "Team B";
     } else if (id - 1 / 2) {
       return "Team C";
-    } else {
-      return "Team A";
     }
   }
 
@@ -59,9 +59,11 @@ export default function Profile(props: any) {
     <>
       <Backsplash />
       <UserProfile>
+        <b>User Profile</b>
+        <br />
         <b>Team: {getTeam(profile.id)}</b>
         <br />
-        <b>Name: {profile.name} - {profile.username} - (profile.id)</b>
+        <b>Name: {profile.name} - {profile.username} - ({profile.id})</b>
         <br />
         <b>Email: {profile.email}</b>
         <br />
